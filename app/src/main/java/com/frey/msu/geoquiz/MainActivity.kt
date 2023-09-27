@@ -19,18 +19,6 @@ class MainActivity : AppCompatActivity() {
 
     private val quizViewModel: QuizViewModel by viewModels()
 
-    private val questionBank = listOf(
-        Question(R.string.question_australia, true),
-        Question(R.string.question_oceans, true),
-        Question(R.string.question_mideast, false),
-        Question(R.string.question_africa, false),
-        Question(R.string.question_americas, true),
-        Question(R.string.question_asia, true)
-    )
-    private var currentIndex = 0
-    private var numberCorrect = 0
-    private var userScore = 0
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,21 +43,21 @@ class MainActivity : AppCompatActivity() {
         }
 
         binding.nextButton.setOnClickListener{
-            currentIndex = (currentIndex + 1) % questionBank.size
+            quizViewModel.moveToNext()
             binding.trueButton.isEnabled = true
             binding.falseButton.isEnabled = true
             updateQuestion()
         }
 
         binding.questionTextview.setOnClickListener{
-            currentIndex = (currentIndex + 1) % questionBank.size
+            quizViewModel.moveToNext()
             binding.trueButton.isEnabled = true
             binding.falseButton.isEnabled = true
             updateQuestion()
         }
 
         binding.prevButton.setOnClickListener{
-            currentIndex = (currentIndex - 1) % questionBank.size
+            quizViewModel.moveToPrev()
             binding.trueButton.isEnabled = ! (binding.trueButton.isEnabled)
             binding.falseButton.isEnabled = ! (binding.falseButton.isEnabled)
             updateQuestion()
@@ -105,16 +93,15 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun updateQuestion() {
-        val questionTextResId = questionBank[currentIndex].textResId
+        val questionTextResId = quizViewModel.currentQuestionText
         binding.questionTextview.setText(questionTextResId)
 
     }
 
     private fun checkAnswer(userAnswer: Boolean) {
-        val correctAnswer = questionBank[currentIndex].answer
-
+        val correctAnswer = quizViewModel.currentQuestionAnswer
         val messageResId = if (userAnswer == correctAnswer) {
-            numberCorrect++
+            quizViewModel.numberCorrect++
             R.string.correct_toast
         } else {
             R.string.incorrect_toast
@@ -124,11 +111,11 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun computeScore() {
-        if (currentIndex == questionBank.size - 1) {
-            userScore = (numberCorrect * 100.0 /questionBank.size).toInt()
-            val formattedScore = String.format("%.1f%%", userScore.toDouble())
+        if (quizViewModel.currentIndex == quizViewModel.questionBank.size - 1) {
+            quizViewModel.userScore = (quizViewModel.numberCorrect * 100.0 /quizViewModel.questionBank.size).toInt()
+            val formattedScore = String.format("%.1f%%", quizViewModel.userScore.toDouble())
             Toast.makeText(this, formattedScore, Toast.LENGTH_SHORT) .show()
-            numberCorrect = 0
+            quizViewModel.numberCorrect = 0
         }
 
     }
