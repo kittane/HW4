@@ -7,6 +7,7 @@ import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.Toast
+import androidx.activity.viewModels
 import com.frey.msu.geoquiz.databinding.ActivityMainBinding
 import com.google.android.material.snackbar.Snackbar
 
@@ -15,6 +16,8 @@ private const val TAG = "MainActivity"
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
+
+    private val quizViewModel: QuizViewModel by viewModels()
 
     private val questionBank = listOf(
         Question(R.string.question_australia, true),
@@ -35,6 +38,7 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        Log.d(TAG, "Got a QuizViewModel: $quizViewModel")
 
         binding.trueButton.setOnClickListener {
             checkAnswer(true)
